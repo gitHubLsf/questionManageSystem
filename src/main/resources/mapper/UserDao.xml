@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.UserDao">
+
+    <select id="queryById" resultMap="TUserMap1">
+        select
+            id,
+            user_name,
+            password,
+            sex,
+            phone,
+            email,
+            status
+        from
+            question_system.t_userinfo
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="queryUserTeacher" resultMap="UserInfoMap">
+        select
+            tu.user_name
+        from
+            question_system.t_teacher_student tt
+        left join
+            question_system.t_userinfo tu
+        on
+            tt.teacher_id = tu.id
+        where
+            tt.user_id = #{id}
+    </select>
+
+
+    <select id="getAllTeacher" resultMap="UserInfoMap">
+        select
+            ti.id,
+            ti.user_name,
+            ti.sex,
+            ti.phone,
+            ti.email,
+            ti.status
+        from
+            question_system.t_user_role tu
+        left join
+            question_system.t_userinfo ti
+        on
+            tu.user_id = ti.id
+        where
+            tu.role_id = 2
+    </select>
+
+
+    <select id="queryByName" resultMap="UserInfoMap">
+        select
+            tu.id,
+            tu.user_name,
+            tu.password,
+            tu.sex,
+            tu.phone,
+            tu.email,
+            tu.status,
+            tts.teacher_id
+        from
+            question_system.t_userinfo tu
+        left join
+            question_system.t_teacher_student tts
+        on
+            tu.id = tts.user_id
+        where
+            tu.user_name = #{value}
+    </select>
+
+
+    <select id="queryAll" resultMap="TUserMap1">
+        select
+            id,
+            user_name,
+            password,
+            sex,
+            phone,
+            email,
+            status
+        from
+            question_system.t_userinfo
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name like CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                and email like CONCAT('%', #{email}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insert">
+        insert into question_system.t_userinfo (
+            id,
+            user_name,
+            password,
+            sex,
+            phone,
+            email,
+            status)
+        values (
+            #{id},
+            #{userName},
+            #{password},
+            #{sex},
+            #{phone},
+            #{email},
+            #{status}
+        );
+
+        insert into question_system.t_user_role (
+            user_id, role_id)
+        values (
+            #{id}, #{role}
+        )
+    </insert>
+
+
+    <insert id="addRoleByUserId" parameterType="com.five.questionSystem.vo.NewRole">
+        <foreach collection="list" item="item" index="index" separator=";">
+            insert into question_system.t_user_role (
+                user_id,
+                role_id
+            )
+            values (
+                #{item.roleId},
+                #{item.userId}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="insertUserTeacher">
+        insert into question_system.t_teacher_student(teacher_id, user_id) values(#{teacherId}, #{id})
+    </insert>
+
+
+    <update id="updateUserTeacher">
+        update question_system.t_teacher_student set teacher_id = #{teacherId} where user_id = #{id}
+    </update>
+
+
+    <update id="update">
+        update question_system.t_userinfo
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <update id="disableUser">
+        update
+            question_system.t_userinfo
+        set
+            status = 0
+        where
+            user_name = #{value}
+    </update>
+
+
+    <delete id="deleteById">
+        delete from question_system.t_user_role where user_id = #{id};
+        delete from question_system.t_userinfo where id = #{id};
+        delete from question_system.t_user_question where user_id = #{id};
+        delete from question_system.t_teacher_student where user_id = #{id};
+        delete from question_system.t_teacher_student where teacher_id = #{id}
+    </delete>
+
+
+    <delete id="deleteUserRole">
+        delete from question_system.t_user_role where user_id = #{id};
+    </delete>
+
+
+    <delete id="deleteByIds" parameterType="java.lang.reflect.Array">
+        delete from question_system.t_user_role where user_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ;
+
+        delete from question_system.t_userinfo where id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ;
+        delete from question_system.t_user_question where user_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ;
+        delete from question_system.t_teacher_student where user_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        ;delete from question_system.t_teacher_student where teacher_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <resultMap type="com.five.questionSystem.entity.User" id="UserInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="teacherId" column="teacher_id" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.User" id="TUserMap1">
+        <id column="id" property="id"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <collection property="roleList" ofType="com.five.questionSystem.entity.Role" javaType="java.util.List"
+                    column="id" select="queryByUserId" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Role" id="TRoleMap1">
+        <id column="id" property="id"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="roleCode" column="role_code" jdbcType="VARCHAR"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="queryByUserId" resultMap="TRoleMap1">
+        select
+        r.id,
+        role_name,
+        role_code,
+        role_desc
+        from
+        t_role r
+        left join
+        t_user_role ur on r.id = ur.role_id
+        left join
+        t_userinfo u on ur.user_id = u.id
+        where
+        u.id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>学生错题统计分析</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">快捷方式</div>
+                        <div class="layui-card-body">
+                            <div class="layui-carousel layadmin-carousel layadmin-shortcut">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/question/student/stuQuestionList.jsp">
+                                                <i class="layui-icon layui-icon-survey"></i>
+                                                <cite>我的错题列表</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/practice/practiceList.jsp">
+                                                <i class="layui-icon layui-icon-chart"></i>
+                                                <cite>我创建的练习</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/practice/student/practiceByTea.jsp">
+                                                <i class="layui-icon layui-icon-template-1"></i>
+                                                <cite>老师布置的练习</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/user/userInfo.jsp">
+                                                <i class="layui-icon layui-icon-set"></i>
+                                                <cite>基本资料</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/user/password.html">
+                                                <i class="layui-icon layui-icon-set"></i>
+                                                <cite>修改密码</cite>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">错题概述</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/question/student/stuQuestionList.jsp"
+                                               class="layadmin-backlog-body">
+                                                <cite>我的错题数量</cite>
+                                                <p><cite><span id="question_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/practice/practiceList.jsp" class="layadmin-backlog-body">
+                                                <cite>我创建的练习数量</cite>
+                                                <p><cite><span id="paper_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/practice/student/practiceByTea.jsp"
+                                               class="layadmin-backlog-body">
+                                                <cite>老师布置的练习数量</cite>
+                                                <p><cite><span id="teacher_paper_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md12" style="width: 1285px; height: 400px;">
+                    <div class="layui-card">
+                        <div id="main1" style="width: 300px;height:400px; float:left;"></div>
+                        <div id="main2" style="width: 300px;height:400px; float:left;"></div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md12" style="width: 1200px;">
+                    <div class="layui-card">
+                        <div class="layui-card-header">我的错题分析</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/question/question_student_list.jsp"
+                                               class="layadmin-backlog-body">
+                                                <cite>
+                                                    系统题库共
+                                                    <span id="system_question_num">0</span>
+                                                    道错题,你占了
+                                                    <span id="user_question_num">0</span>
+                                                    道,系统错误率为
+                                                    <span id="error_system_count">0</span>
+                                                    %
+                                                </cite>
+                                            </a>
+                                        </li>
+
+
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/question/question_student_list.jsp"
+                                               class="layadmin-backlog-body">
+                                                <cite>
+                                                    在老师手下的学生的
+                                                    <span id="under_teacher_question_num">0</span>
+                                                    道错题中,你占了
+                                                    <span id="under_teacher_person_question_num">0</span>
+                                                    道,班级错误率为
+                                                    <span id="error_user_count">0</span>
+                                                    %
+                                                </cite>
+                                            </a>
+                                        </li>
+
+
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/question/question_student_list.jsp"
+                                               class="layadmin-backlog-body">
+                                                <cite>
+                                                    在老师手下的
+                                                    <span id="under_teacher_student_num">0</span>
+                                                    名学生中,你的错题数量排名为
+                                                    <span id="under_teacher_student_sort">0</span>
+                                                    ,继续加油
+                                                </cite>
+                                            </a>
+                                        </li>
+
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/view/js/echarts.min.js"></script>
+<script>
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index'
+    }).use(['index', 'console', 'echarts'], function () {
+
+        var $ = layui.$,
+            myecharts1 = echarts.init(document.getElementById('main1')),
+            myecharts2 = echarts.init(document.getElementById('main2'));
+
+        $.ajax({
+            url: '/count/system/info',
+            success: function (res) {
+                if (res.code === 0) {
+                    $('#system_question_num').html(res.data[0].value);
+
+                    $.ajax({
+                        url: '/count/student/info',
+                        success: function (res_) {
+                            if (res_.code === 0) {
+                                $('#question_num').html(res_.data[0].value);
+                                $('#user_question_num').html(res_.data[0].value);
+                                $('#paper_num').html(res_.data[1].value);
+                                $('#teacher_paper_num').html(res_.data[2].value);
+
+                                if (res.data[0].value !== 0) {
+                                    $('#error_system_count').html((res_.data[0].value / res.data[0].value) * 100);
+                                }
+
+                                $.ajax({
+                                    url: '/count/teacher/ownstudent/question/num/student',
+                                    success: function (res_1) {
+                                        if (res_1.code === 0) {
+                                            $('#under_teacher_question_num').html(res_1.data);
+                                            $('#under_teacher_person_question_num').html(res_.data[0].value);
+
+                                            if (res_1.data !== 0) {
+                                                $('#error_user_count').html((res_.data[0].value / res_1.data) * 100);
+                                            }
+
+                                        }
+                                    }
+                                });
+
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        $.ajax({
+            url: '/count/teacher/ownstudent/num/student',
+            success: function (res) {
+                if (res.code === 0) {
+                    $('#under_teacher_student_num').html(res.data);
+
+                    $.ajax({
+                        url: '/count/teacher/everystudent/question/num/sort',
+                        success: function (res_) {
+                            if (res_.code === 0) {
+                                $('#under_teacher_student_sort').html(res_.data);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        option1 = {
+            xAxis: {
+                type: 'category',
+                data: ['选择题', '填空题', '问答题']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar'
+            }]
+        };
+
+        option2 = {
+            xAxis: {
+                type: 'category',
+                data: ['简单', '较难', '很难']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar'
+            }]
+        };
+
+
+        $.ajax({
+            url: '/count/student/ownquestion/type/num',
+            success: function (res) {
+                if (res.code === 0) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        option1.series[0].data.push({'name': res.data[i].name, 'value': res.data[i].value});
+                    }
+                    myecharts1.hideLoading();    //隐藏加载动画
+                    myecharts1.setOption(option1);
+                }
+            }
+        });
+
+
+        $.ajax({
+            url: '/count/student/ownquestion/difficulty/num',
+            async: false,
+            success: function (res) {
+                if (res.code === 0) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        option2.series[0].data.push({'name': res.data[i].name, 'value': res.data[i].value});
+                    }
+                    myecharts2.hideLoading();    //隐藏加载动画
+                    myecharts2.setOption(option2);
+                }
+            }
+        });
+
+
+    });
+</script>
+</body>
+</html>
+

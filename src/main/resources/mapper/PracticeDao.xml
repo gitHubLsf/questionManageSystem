@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.PracticeDao">
+
+
+    <select id="queryById" resultMap="paperMap">
+        select
+            id,
+            name,
+            create_time
+        from
+            question_system.t_exampaper
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="queryPracticeById" resultMap="PracticeMap">
+        select
+            id,
+            name,
+            create_time
+        from
+            question_system.t_exampaper
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="querySysPractice" resultMap="paperMap">
+        select
+            te.id,
+            te.name,
+            te.create_time,
+            tu.user_name
+        from
+            question_system.t_exampaper te
+        left join
+            question_system.t_userinfo tu
+        on
+            te.user_id = tu.id
+        <where>
+            <if test="id != null">
+                and te.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and te.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="createTime != null">
+                and te.create_time = #{createTime}
+            </if>
+            <if test="userName != null and userName != ''">
+                and tu.user_name like CONCAT('%', #{userName}, '%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryPraUnderTea" resultMap="paperMap">
+        select
+            te.id,
+            te.name,
+            te.create_time
+        from
+            question_system.t_teacher_student ts
+        left join
+            question_system.t_exampaper te
+        on
+            ts.teacher_id = te.user_id
+        <where>
+            <if test="id != null">
+                and te.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and te.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="createTime != null">
+                and te.create_time = #{createTime}
+            </if>
+            <if test="userId != null">
+                and ts.user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryPersonPractice" resultMap="paperMap">
+        select
+            id,
+            name,
+            create_time
+        from
+            question_system.t_exampaper
+        <where>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insert">
+        insert into question_system.t_exampaper(
+            id,
+            name,
+            create_time,
+            user_id)
+        values (
+            #{id},
+            #{name},
+            #{createTime},
+            #{userId})
+    </insert>
+
+
+    <update id="update">
+        update question_system.t_exampaper
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <insert id="addPart">
+        insert into question_system.t_exampart(
+            id,
+            name,
+            question_count,
+            exampaper_id,
+            grade,
+            difficulty,
+            board,
+            type)
+        values(
+            #{id},
+            #{name},
+            #{questionCount},
+            #{exampaperId},
+            #{grade},
+            #{difficulty},
+            #{board},
+            #{type})
+    </insert>
+
+
+    <insert id="addPartQuestion">
+        insert into question_system.t_examquestion(
+            part_id,
+            question_id)
+        values(
+            #{pid},
+            #{id})
+    </insert>
+
+
+    <select id="getPartQuestion" resultType="Integer">
+        select
+            id
+        from question_system.t_question
+        <where>
+            <if test="grade != null">
+                and grade = #{grade}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getTeacherPartQuestion" resultType="Integer">
+        select
+            tq.id
+        from
+            question_system.t_user_question tu
+        left join
+            question_system.t_question tq
+        on
+            tu.question_id = tq.id
+        <where>
+            <if test="grade != null">
+                and tu.grade = #{grade}
+            </if>
+            <if test="difficulty != null">
+                and tu.difficulty = #{difficulty}
+            </if>
+            <if test="type != null">
+                and tq.type = #{type}
+            </if>
+        </where>
+    </select>
+
+
+    <delete id="deleteById">
+        delete from question_system.t_examquestion where part_id in(select id from question_system.t_exampart where exampaper_id = #{id});
+
+        delete from question_system.t_exampart where exampaper_id = #{id};
+
+        delete from question_system.t_exampaper where id = #{id}
+    </delete>
+
+
+    <delete id="batchDelete" parameterType="java.lang.reflect.Array">
+        delete from question_system.t_examquestion where part_id in(select id from question_system.t_exampart where exampaper_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        );
+
+        delete from question_system.t_exampart where exampaper_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ;
+
+        delete from question_system.t_exampaper where id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <select id="getById" parameterType="Integer" resultMap="paperMap">
+        select * from question_system.t_exampaper where id = #{id}
+    </select>
+
+
+    <resultMap type="com.five.questionSystem.entity.ExamPaper" id="paperMap" autoMapping="true">
+        <id column="id" property="id"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP" javaType="Date"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR" />
+        <collection property="parts" javaType="java.util.List" ofType="com.five.questionSystem.entity.ExamPart" column="id" select="getPartsByPaperId" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.ExamPart" id="paperMap2" autoMapping="true">
+        <id column="id" property="id"/>
+        <result property="questionCount" column="question_count" jdbcType="INTEGER"/>
+        <result property="exampaperId" column="exampaper_id" jdbcType="INTEGER"/>
+        <collection property="questions" ofType="com.five.questionSystem.entity.Question" javaType="java.util.List" column="id" select="select1" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Question" id="questionMap">
+        <id column="id" property="id"/>
+        <collection property="ops" ofType="com.five.questionSystem.entity.Option" javaType="java.util.List" column="id" select="select2" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Option" id="optionMap">
+        <result property="questionId" column="question_id" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.ExamPaper" id="PracticeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP" javaType="Date"/>
+    </resultMap>
+
+    <select id="getPartsByPaperId" parameterType="Integer" resultMap="paperMap2">
+        select * from question_system.t_exampart where exampaper_id = #{id}
+    </select>
+    <select id="select1" parameterType="Integer" resultMap="questionMap">
+        select * from question_system.t_question where id in(select question_id from question_system.t_examquestion where part_id = #{id})
+    </select>
+    <select id="select2" parameterType="Integer" resultMap="optionMap">
+        select * from question_system.t_option where question_id = #{id}
+    </select>
+</mapper>

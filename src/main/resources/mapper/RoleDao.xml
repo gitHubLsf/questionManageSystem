@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.RoleDao">
+
+    <select id="queryRoleById" resultMap="TRoleMap1">
+        select
+            id,
+            role_name,
+            role_code,
+            role_desc
+        from
+            question_system.t_role
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="queryAll" resultMap="TRoleMap1">
+        select
+            id,
+            role_name,
+            role_code,
+            role_desc
+        from
+            question_system.t_role
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="roleName != null and roleName != ''">
+                and role_name = #{roleName}
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                and role_desc = #{roleDesc}
+            </if>
+        </where>
+    </select>
+
+
+    <update id="update">
+        update question_system.t_role
+        <set>
+            <if test="roleName != null and roleName != ''">
+                role_name = #{roleName},
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                role_code = #{roleCode},
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                role_desc = #{roleDesc},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <delete id="deletePermission">
+        delete from question_system.t_role_permission where role_id = #{id};
+    </delete>
+
+
+    <insert id="addPermission" parameterType="com.five.questionSystem.vo.NewPermission">
+        <foreach collection="list" item="item" index="index" separator=";">
+            insert into question_system.t_role_permission (
+                role_id,
+                permission_id
+            )
+            values (
+                #{item.id},
+                #{item.per}
+            )
+        </foreach>
+    </insert>
+
+
+    <resultMap type="com.five.questionSystem.entity.Role" id="TRoleMap1">
+        <id column="id" property="id"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="roleCode" column="role_code" jdbcType="VARCHAR"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+        <collection property="ps" ofType="com.five.questionSystem.entity.Permission" javaType="java.util.List"
+                    column="id" select="select1" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Permission" id="permissonMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="permissionName" column="permission_name" jdbcType="VARCHAR"/>
+        <result property="permissionDesc" column="permission_desc" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Role" id="TRoleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="roleCode" column="role_code" jdbcType="VARCHAR"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="select1" parameterType="Integer" resultMap="permissonMap">
+        select
+        r.id,
+        permission_name,
+        permission_desc,
+        url
+        from
+        t_permission_resource r
+        left join
+        t_role_permission ur on r.id = ur.permission_id
+        left join
+        t_role u on ur.role_id = u.id
+        where
+        u.id = #{id}
+    </select>
+    <select id="queryByUserId" resultMap="TRoleMap1">
+        select
+        r.id,
+        role_name,
+        role_code,
+        role_desc
+        from
+        t_role r
+        left join
+        t_user_role ur on r.id = ur.role_id
+        left join
+        t_userinfo u on ur.user_id = u.id
+        where
+        u.id = #{id}
+    </select>
+</mapper>

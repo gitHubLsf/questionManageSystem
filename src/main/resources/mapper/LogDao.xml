@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.LogDao">
+
+
+    <select id="queryById" resultMap="LogMap">
+        select
+            id,
+            log_type,
+            visit_time,
+            create_by,
+            ip,
+            description,
+            method,
+            params,
+            exception_code,
+            exception_detail
+        from
+            question_system.t_log
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="queryAll" resultMap="LogMap">
+        select
+            id,
+            log_type,
+            visit_time,
+            create_by,
+            ip,
+            description,
+            method,
+            params,
+            exception_code,
+            exception_detail
+        from
+            question_system.t_log
+        <where>
+            <if test="createBy != null and createBy != ''">
+                and create_by like CONCAT('%', #{createBy}, '%')
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into question_system.t_log (
+            log_type,
+            visit_time,
+            create_by,
+            url,
+            ip,
+            description,
+            execution_time,
+            method,
+            params,
+            exception_code,
+            exception_detail
+        ) values (
+            #{logType},
+            #{visitTime},
+            #{createBy},
+            #{url},
+            #{ip},
+            #{description},
+            #{executionTime},
+            #{method},
+            #{params},
+            #{exceptionCode},
+            #{exceptionDetail}
+        )
+    </insert>
+
+
+
+    <delete id="deleteById">
+        delete from question_system.t_log where id = #{id}
+    </delete>
+
+
+    <delete id="batchDelete" parameterType="java.lang.reflect.Array">
+        delete from question_system.t_log where id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <resultMap type="com.five.questionSystem.entity.Log" id="LogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="logType" column="log_type" jdbcType="INTEGER"/>
+        <result property="visitTime" column="visit_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="params" column="params" jdbcType="VARCHAR"/>
+        <result property="exceptionCode" column="exception_code" jdbcType="VARCHAR"/>
+        <result property="exceptionDetail" column="exception_detail" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

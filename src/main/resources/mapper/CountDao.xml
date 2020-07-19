@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.CountDao">
+
+
+    <select id="querySystemQuestionNumByType" resultType="Integer">
+        select
+            count(*)
+        from
+            question_system.t_question t
+        where
+            t.type = #{id}
+    </select>
+
+
+    <select id="querySystemQuestionNumByDifficulty" resultType="Integer">
+        select
+            count(*)
+        from
+            question_system.t_question t
+        where
+            t.difficulty = #{id}
+    </select>
+
+
+    <select id="querySystemQuestionNumByGrade" resultType="Integer">
+        select
+            count(*)
+        from
+            question_system.t_question t
+        where
+            t.grade = #{id}
+    </select>
+
+
+    <select id="querySystemStudentNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_role tr
+        left join
+            question_system.t_user_role tu
+        on
+            tr.id = tu.role_id
+        where
+            tr.id = 3
+    </select>
+
+
+    <select id="querySystemExamNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_exampaper
+    </select>
+
+
+    <select id="querySystemTeacherNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_role tr
+        left join
+            question_system.t_user_role tu
+        on
+            tr.id = tu.role_id
+        where
+            tr.id = 2
+    </select>
+
+
+    <select id="querySystemLogNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_log
+    </select>
+
+
+    <select id="querySystemQuestionNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_question
+    </select>
+
+
+    <select id="queryStudentNumUnderTeacher" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_teacher_student t
+        where
+            t.teacher_id = #{id}
+    </select>
+
+
+    <select id="queryQuestionNumByTypeUnderTeacher" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_teacher_student tts
+        left join
+            question_system.t_user_question tuq
+        on
+            tts.user_id = tuq.user_id
+        left join
+            question_system.t_question tq
+        on
+            tuq.question_id = tq.id
+        where
+            tts.teacher_id = #{userId}
+        and
+            tq.type = #{questionId}
+    </select>
+
+
+    <select id="queryQuestionNumByTypeUnderStudent" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_user_question tuq
+        left join
+            question_system.t_question tq
+        on
+            tuq.question_id = tq.id
+        where
+            tq.type = #{questionId}
+        and
+            tuq.user_id = #{userId}
+    </select>
+
+
+    <select id="queryQuestionNumByDifficultyUnderStudent" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_user_question tuq
+        where
+            tuq.user_id = #{userId}
+        and
+            tuq.difficulty = #{questionId}
+    </select>
+
+
+    <select id="queryStudentQuestionNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_user_question tuq
+        where
+            tuq.user_id = #{id}
+    </select>
+
+
+    <select id="queryStudentOwnExamNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_exampaper te
+        where
+            te.user_id = #{id}
+    </select>
+
+
+    <select id="queryStudentTeacherExamNum" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            question_system.t_teacher_student tts
+        left join
+            question_system.t_exampaper te
+        on
+            tts.teacher_id = te.user_id
+        where
+            tts.user_id = #{id};
+    </select>
+
+
+    <select id="queryQuestionNumUnderTeacher" resultType="java.lang.Integer">
+        select
+            count(distinct tuq.question_id)
+        from
+            question_system.t_teacher_student tts
+        left join
+            question_system.t_user_question tuq
+        on
+            tts.user_id = tuq.user_id
+        where
+            tts.teacher_id = #{id};
+    </select>
+
+
+    <select id="queryQuestionNumEveryStudentUnderTeacher" resultMap="sortMap">
+        select
+            ti.user_name,
+            count(*) as num
+        from
+            question_system.t_teacher_student tts
+        left join
+            question_system.t_user_question tuq
+        on
+            tts.user_id = tuq.user_id
+        left join
+            question_system.t_userinfo ti
+        on
+            tuq.user_id = ti.id
+        where
+            tts.teacher_id = #{id}
+        group by
+            tts.user_id;
+    </select>
+
+
+    <select id="queryQuestionNumByDifficultyUnderTeacher" resultType="java.lang.Integer">
+        select
+        count(*)
+        from
+        question_system.t_teacher_student tts
+        left join
+        question_system.t_user_question tuq
+        on
+        tts.user_id = tuq.user_id
+        where
+        tts.teacher_id = #{userId}
+        and
+        tuq.difficulty = #{questionId}
+    </select>
+
+
+    <resultMap type="com.five.questionSystem.vo.Types" id="sortMap">
+        <result property="value" column="num" jdbcType="INTEGER"/>
+        <result property="name" column="user_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+</mapper>

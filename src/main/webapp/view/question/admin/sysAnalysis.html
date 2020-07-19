@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>系统错题统计分析</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">快捷方式</div>
+                        <div class="layui-card-body">
+                            <div class="layui-carousel layadmin-carousel layadmin-shortcut">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/question/sysQuestionList.jsp">
+                                                <i class="layui-icon layui-icon-chart"></i>
+                                                <cite>系统题库</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/practice/admin/sysPracticeList.jsp">
+                                                <i class="layui-icon layui-icon-template-1"></i>
+                                                <cite>系统练习库</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/user/admin/userList.jsp">
+                                                <i class="layui-icon layui-icon-user"></i>
+                                                <cite>用户管理</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/role/admin/roleList.jsp">
+                                                <i class="layui-icon layui-icon-user"></i>
+                                                <cite>角色管理</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/log/admin/logList.jsp">
+                                                <i class="layui-icon layui-icon-survey"></i>
+                                                <cite>日志管理</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/user/userInfo.jsp">
+                                                <i class="layui-icon layui-icon-set"></i>
+                                                <cite>基本资料</cite>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a lay-href="/view/user/password.html">
+                                                <i class="layui-icon layui-icon-set"></i>
+                                                <cite>修改密码</cite>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">系统信息</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/question/sysQuestionList.jsp" class="layadmin-backlog-body">
+                                                <cite>错题数量</cite>
+                                                <p><cite><span id="question_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/practice/admin/sysPracticeList.jsp" class="layadmin-backlog-body">
+                                                <cite>练习数量</cite>
+                                                <p><cite><span id="paper_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/user/admin/userList.jsp" class="layadmin-backlog-body">
+                                                <cite>学生数量</cite>
+                                                <p><cite><span id="student_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/user/admin/userList.jsp" class="layadmin-backlog-body">
+                                                <cite>教师数量</cite>
+                                                <p><cite><span id="teacher_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a lay-href="/view/log/admin/logList.jsp" class="layadmin-backlog-body">
+                                                <cite>日志数量</cite>
+                                                <p><cite><span id="log_num">0</span></cite></p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md12" style="width: 1285px; height: 400px;">
+                    <div class="layui-card">
+                        <div id="main1" style="width: 300px;height:400px; float:left;"></div>
+                        <div id="main2" style="width: 300px;height:400px; float:left;"></div>
+                        <div id="main3" style="width: 600px;height:400px; float:left;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">版本信息</div>
+                <div class="layui-card-body layui-text" style="height: 186px;">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="100">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>系统名称</td>
+                            <td>
+                                错题管理系统
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>当前版本</td>
+                            <td>
+                                version 1.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>小组成员</td>
+                            <td>
+                                第五小组:黄前奔/林少峰/施浩宇/薛欣欣
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>主要功能</td>
+                            <td>错题管理/组卷管理/人员管理/日志管理</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js?t=1"></script>
+<script src="/view/js/echarts.min.js"></script>
+<script>
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'console', 'echarts'], function () {
+        var $ = layui.$,
+            myecharts1 = echarts.init(document.getElementById('main1')),
+            myecharts2 = echarts.init(document.getElementById('main2')),
+            myecharts3 = echarts.init(document.getElementById('main3'));
+
+        $.ajax({
+            url:'/count/system/info',
+            success: function (res) {
+                if (res.code === 0) {
+                    $('#question_num').html(res.data[0].value);
+                    $('#paper_num').html(res.data[1].value);
+                    $('#student_num').html(res.data[2].value);
+                    $('#teacher_num').html(res.data[3].value);
+                    $('#log_num').html(res.data[4].value);
+                }
+            }
+        });
+
+        option1 = {
+            xAxis: {
+                type: 'category',
+                data: ['选择题', '填空题', '问答题']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar'
+            }]
+        };
+
+        option2 = {
+            xAxis: {
+                type: 'category',
+                data: ['简单', '较难', '很难']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar'
+            }]
+        };
+
+        option3 = {
+            xAxis: {
+                type: 'category',
+                data: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '初一', '初二', '初三']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar'
+            }]
+        };
+
+        $.ajax({
+            url: '/count/system/type/num',
+            async: false,
+            success: function (res) {
+                if (res.code === 0) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        option1.series[0].data.push({'name': res.data[i].name, 'value': res.data[i].value});
+                    }
+                    myecharts1.hideLoading();    //隐藏加载动画
+                    myecharts1.setOption(option1);
+                }
+            }
+        });
+
+
+        $.ajax({
+            url: '/count/system/difficulty/num',
+            async: false,
+            success: function (res) {
+                if (res.code === 0) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        option2.series[0].data.push({'name': res.data[i].name, 'value': res.data[i].value});
+                    }
+                    myecharts2.hideLoading();    //隐藏加载动画
+                    myecharts2.setOption(option2);
+                }
+            }
+        });
+
+
+        $.ajax({
+            url: '/count/system/grade/num',
+            async: false,
+            success: function (res) {
+                if (res.code === 0) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        option3.series[0].data.push({'name': res.data[i].name, 'value': res.data[i].value});
+                    }
+                    myecharts3.hideLoading();    //隐藏加载动画
+                    myecharts3.setOption(option3);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
+

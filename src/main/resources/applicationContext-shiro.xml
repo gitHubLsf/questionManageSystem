@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="authenticator" ref="authenticator" />
+
+        <property name="cacheManager" ref="cacheManager"/>
+
+        <property name="realms">
+            <list>
+                <ref bean="securityRealm"/>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:ehcache-shiro.xml"/>
+    </bean>
+
+
+    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+        <property name="authenticationStrategy">
+            <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy" />
+        </property>
+    </bean>
+
+
+    <bean id="securityRealm" class="com.five.questionSystem.common.SecurityRealm">
+        <!-- 将凭证匹配器设置到 realm 中，realm 按照凭证匹配器的要求进行散列 -->
+        <property name="credentialsMatcher">
+            <!-- 凭证匹配器 -->
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+            <!-- 加密算法的名称-->
+                <property name="hashAlgorithmName" value="MD5" />
+            <!--加密次数-->
+                <property name="hashIterations" value="1" />
+            </bean>
+        </property>
+    </bean>
+
+
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/view/user/login.html"/>
+        <property name="successUrl" value="/view/index.jsp"/>
+
+        <!-- 通过 unauthorizedUrl 指定没有权限操作时跳转的页面-->
+        <property name="unauthorizedUrl" value="/view/user/login.html"/>
+
+        <property name="filters">
+            <map>
+                <entry key="roles">
+                    <bean
+                            class="com.five.questionSystem.common.CustomRolesAuthorizationFilter" />
+                </entry>
+            </map>
+        </property>
+
+        <property name="filterChainDefinitions">
+            <value>
+                /layuiadmin/** = anon
+                /view/user/login.html = anon
+                /user/login = anon
+                /user/register = anon
+                /code/getCode = anon
+                /user/getPassword = anon
+                /user/userExit = anon
+                /practice/view = anon
+                /view/user/register.html = anon
+
+                /view/question/student/** = roles[student]
+                /view/question/teacher/** = roles[teacher]
+                /view/question/sysQuestionList.jsp = roles["admin,teacher"]
+                /view/question/admin/** = roles[admin]
+                /view/practice/practiceList.jsp = roles["teacher,student"]
+                /view/practice/practiceEdit.jsp = roles["teacher,student"]
+                /view/practice/teacher/** = roles[teacher]
+                /view/practice/student/** = roles[student]
+                /view/practice/admin/** = roles[admin]
+                /view/user/admin/** = roles[admin]
+                /view/role/admin/** = roles[admin]
+                /view/log/admin/** = roles[admin]
+
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+</beans>

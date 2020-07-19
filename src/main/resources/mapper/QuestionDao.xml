@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.QuestionDao">
+
+    <select id="querySysQuestionById" resultMap="questionMap1">
+        select
+            id,
+            name,
+            type,
+            board,
+            difficulty,
+            grade
+        from
+            question_system.t_question
+        where
+            id = #{id}
+    </select>
+
+
+    <select id="hasQuestionInSystem" resultType="com.five.questionSystem.entity.Question">
+        select
+        id
+        from
+        question_system.t_question
+        where
+        hashcode = #{value}
+    </select>
+
+
+    <select id="hasPersonQuestion" resultType="com.five.questionSystem.entity.PersonQuestion">
+        select
+            id
+        from
+            question_system.t_user_question
+        where
+            question_id = #{questionId}
+        and
+            user_id = #{userId}
+    </select>
+
+
+    <select id="queryPersonQuestionById" resultMap="questionMap4">
+        select
+            tuq.id,
+            tq.name,
+            tq.type,
+            tuq.difficulty,
+            tuq.question_id,
+            tuq.user_id
+        from
+            question_system.t_user_question tuq
+        left join
+            question_system.t_question tq
+        on
+            tuq.question_id = tq.id
+        where
+            tuq.id = #{id}
+    </select>
+
+
+    <select id="queryPersonQuestion" resultMap="questionMap4">
+        select
+            tuq.id,
+            tq.name,
+            tq.type,
+            tuq.grade,
+            tuq.difficulty,
+            tuq.question_id
+        from
+            question_system.t_user_question tuq
+        left join
+            question_system.t_question tq
+        on
+            tuq.question_id = tq.id
+        <where>
+            <if test="name != null and name != ''">
+                and tq.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="type != null">
+                and tq.type = #{type}
+            </if>
+            <if test="difficulty != null">
+                and tuq.difficulty = #{difficulty}
+            </if>
+            <if test="grade != null">
+                and tuq.grade = #{grade}
+            </if>
+            <if test="userId != null">
+                and tuq.user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryStuQuestionUnderTea" resultMap="questionMap4">
+        select
+            tuq.id,
+            tq.name,
+            tq.type,
+            tuq.grade,
+            tuq.difficulty,
+            tuq.question_id
+        from
+            question_system.t_teacher_student ts
+        left join
+            question_system.t_user_question tuq on ts.user_id = tuq.user_id
+        left join
+            question_system.t_question tq on tuq.question_id = tq.id
+        <where>
+            <if test="name != null and name != ''">
+                and tq.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="type != null">
+                and tq.type = #{type}
+            </if>
+            <if test="difficulty != null">
+                and tuq.difficulty = #{difficulty}
+            </if>
+            <if test="grade != null">
+                and tuq.grade = #{grade}
+            </if>
+            <if test="userId != null">
+                and ts.teacher_id = #{userId}
+            </if>
+            <if test="1 != 2">
+                and tuq.question_id is not null
+            </if>
+        </where>
+    </select>
+
+
+    <select id="querySystemQuestion" resultMap="questionMap1">
+        select
+            id,
+            name,
+            type,
+            board,
+            difficulty,
+            grade
+        from
+            question_system.t_question
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="board != null">
+                and board = #{board}
+            </if>
+            <if test="difficulty != null">
+                and difficulty = #{difficulty}
+            </if>
+            <if test="grade != null">
+                and grade = #{grade}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertQuestionToSystem">
+        insert into question_system.t_question(
+            id,
+            name,
+            type,
+            board,
+            difficulty,
+            grade,
+        hashcode)
+        values (
+            #{id},
+            #{name},
+            #{type},
+            #{board},
+            #{difficulty},
+            #{grade},
+            #{hashCode})
+    </insert>
+
+
+    <insert id="addQuestionByPerson">
+        insert into question_system.t_user_question (
+            id,
+            user_id,
+            question_id,
+            difficulty,
+            grade
+        )
+        values (
+            #{id},
+            #{userId},
+            #{questionId},
+            #{difficulty},
+            #{grade}
+        )
+    </insert>
+
+
+    <update id="updateSysQuestion">
+        update question_system.t_question
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="difficulty != null">
+                difficulty = #{difficulty},
+            </if>
+            <if test="grade != null">
+                grade = #{grade},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <update id="updatePersonQuestion">
+        update question_system.t_user_question
+        <set>
+            <if test="difficulty != null">
+                difficulty = #{difficulty},
+            </if>
+            <if test="grade != null">
+                grade = #{grade},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <delete id="deleteSysQuestionById">
+        delete from question_system.t_question where id = #{id};
+        delete from question_system.t_option where question_id = #{id};
+        delete from question_system.t_user_question where question_id = #{id}
+    </delete>
+
+
+    <delete id="deletePersonQuestion">
+        delete from question_system.t_user_question where id = #{id}
+    </delete>
+
+
+    <delete id="batchDeleteSysQuestion" parameterType="java.lang.reflect.Array">
+        delete from question_system.t_question where id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>;
+
+        delete from question_system.t_user_question where question_id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <delete id="batchDeletePersonQuestion" parameterType="java.lang.reflect.Array">
+        delete from question_system.t_user_question where id in
+        <foreach collection="array" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <resultMap type="com.five.questionSystem.entity.Question" id="questionMap4">
+        <id column="question_id" property="questionId"/>
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="grade" column="grade" jdbcType="INTEGER"/>
+        <result property="difficulty" column="difficulty" jdbcType="INTEGER"/>
+        <collection property="ops" ofType="com.five.questionSystem.entity.Option" javaType="java.util.List"
+                    column="question_id" select="select1" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Option" id="optionMap">
+        <result property="questionId" column="question_id" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Question" id="questionMap1">
+        <id column="id" property="id"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="difficulty" column="difficulty" jdbcType="INTEGER"/>
+        <result property="grade" column="grade" jdbcType="INTEGER"/>
+        <collection property="ops" ofType="com.five.questionSystem.entity.Option" javaType="java.util.List" column="id"
+                    select="select1" />
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Question" id="QuestionMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="difficulty" column="difficulty" jdbcType="INTEGER"/>
+        <result property="grade" column="grade" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap type="com.five.questionSystem.entity.Question" id="QuestionMap3">
+        <result property="hashCode" column="hashcode" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="select1" parameterType="Integer" resultMap="optionMap">
+        select * from question_system.t_option where question_id = #{id}
+    </select>
+</mapper>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>添加练习</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <style type="text/css">
+        .table-select-icon {
+            position: absolute;
+            right: 10px;
+            line-height: 34px;
+            color: #d3d3d3
+        }
+
+        .table-select-selected dl {
+            display: block
+        }
+
+        .table-select dl {
+            position: absolute;
+            left: 0;
+            padding: 5px 0;
+            z-index: 999;
+            min-width: 100%;
+            border: 1px solid #d2d2d2;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+            box-sizing: border-box
+        }
+
+        .table-select dl dd {
+            cursor: pointer
+        }
+
+        .table-select dl dd, .table-select dl dt {
+            padding: 0 10px;
+            line-height: 36px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .table-select dl dd.layui-this {
+            background-color: #5FB878;
+            color: #fff
+        }
+
+        .table-select dl dd, .table-select dl dt {
+            padding: 0 10px;
+            line-height: 36px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .table-select dl dd:hover {
+            background-color: #f2f2f2
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="margin-top: 25px;">
+            <div class="layui-btn-group" style="margin-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-admin" data-type="addRow">添加一行</button>
+            </div>
+
+            <table id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>
+
+            <div class="layui-hide">
+                <button class="layui-btn" lay-filter="LAY-user-front-submit" id="LAY-user-back-submit_one"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script type="text/html" id="selectTpl_type">
+    {{d.type}}<i class="layui-icon table-select-icon"></i>
+</script>
+<script type="text/html" id="selectTp2_type">
+    {{d.difficulty}}<i class="layui-icon table-select-icon"></i>
+</script>
+<script type="text/html" id="selectTp3_type">
+    {{d.grade}}<i class="layui-icon table-select-icon"></i>
+</script>
+<script type="text/html" id="selectTp4_type">
+    {{d.question_count}}<i class="layui-icon table-select-icon"></i>
+</script>
+<script>
+    layui.config({
+        base: '/layuiadmin/'
+    }).extend({
+        index: 'lib/index'
+    }).use(['index', 'table'], function () {
+        var $ = layui.$
+            , table = layui.table;
+
+        (function ($, doc, o) {
+            var tk;
+            var obj;
+            var otd;
+            var callback;
+            o.show = function (h, e, c) {
+                callback = c;
+                var d = doc.getElementById('table_type_select');
+                if (d) {
+                    d.remove();
+                }
+                otd = e;
+                var s = '<div id="table_type_select" class="table-select"><dl class="layui-anim layui-anim-upbit" style="padding: 0px;top: 0px">';
+                for (var k in h.data) {
+                    if (h.value === h.data[k].value) {
+                        s += '<dd lay-value="' + h.data[k].value + '" class="layui-this">' + h.data[k].text + '</dd>';
+                    } else {
+                        s += '<dd lay-value="' + h.data[k].value + '" >' + h.data[k].text + '</dd>';
+                    }
+                }
+                s += '</dl></div>';
+                otd.innerHTML = s + otd.innerHTML;
+                obj = doc.getElementById('table_type_select');
+                obj.onmouseout = function () {
+                    tk = 1;
+                    setTimeout(function () {
+                        if (tk) {
+                            if (obj) {
+                                ke = 0;
+                                obj.remove();
+                            }
+                        }
+                    }, 200);
+                };
+                obj.onmouseover = function () {
+                    tk = 0;
+                };
+                obj.addEventListener('click', function (e) {
+                    var value = $(e.srcElement).attr('lay-value');
+                    var text = e.srcElement.innerHTML;
+                    obj.remove();
+                    callback({value: value, text: text});
+                });
+            }
+        })($, document, window.type_select = {});
+
+        table.on('tool(LAY-user-back-manage)', function (obj) {
+            if (obj.event === 'type') {
+                //显示下拉框框
+                type_select.show({
+                    //设置当前选择的id
+                    value: obj.data.type_id,
+                    //下拉选择数据
+                    data: [{
+                        value: '0',
+                        text: '选择题'
+                    }, {
+                        value: '1',
+                        text: '填空题'
+                    }, {
+                        value: '2',
+                        text: '问答题'
+                    }]
+                }, this, function (e) {
+                    //回调函数 返回结果
+                    obj.data.type_id = e.value;
+                    obj.data.type = e.text;
+                    obj.update(obj.data);
+                });
+            } else if (obj.event === 'type1') {
+                //显示下拉框框
+                type_select.show({
+                    //设置当前选择的id
+                    value: obj.data.type_id,
+                    //下拉选择数据
+                    data: [{
+                        value: '0',
+                        text: '简单'
+                    }, {
+                        value: '1',
+                        text: '较难'
+                    }, {
+                        value: '2',
+                        text: '很难'
+                    }]
+                }, this, function (e) {
+                    //回调函数 返回结果
+                    obj.data.type_id = e.value;
+                    obj.data.difficulty = e.text;
+                    obj.update(obj.data);
+                });
+            } else if (obj.event === 'type2') {
+                //显示下拉框框
+                type_select.show({
+                    //设置当前选择的id
+                    value: obj.data.type_id,
+                    //下拉选择数据
+                    data: [{
+                        value: '0',
+                        text: '一年级'
+                    }, {
+                        value: '1',
+                        text: '二年级'
+                    }, {
+                        value: '2',
+                        text: '三年级'
+                    }, {
+                        value: '3',
+                        text: '四年级'
+                    }, {
+                        value: '4',
+                        text: '五年级'
+                    }, {
+                        value: '5',
+                        text: '六年级'
+                    }, {
+                        value: '6',
+                        text: '初一'
+                    }, {
+                        value: '7',
+                        text: '初二'
+                    }, {
+                        value: '8',
+                        text: '初三'
+                    }]
+                }, this, function (e) {
+                    obj.data.type_id = e.value;
+                    obj.data.grade = e.text;
+                    obj.update(obj.data);
+                });
+            } else if (obj.event === 'type3') {
+                //显示下拉框框
+                type_select.show({
+                    //设置当前选择的id
+                    value: obj.data.type_id,
+                    //下拉选择数据
+                    data: [{
+                        value: '0',
+                        text: '1'
+                    }, {
+                        value: '1',
+                        text: '2'
+                    }, {
+                        value: '2',
+                        text: '3'
+                    }, {
+                        value: '3',
+                        text: '4'
+                    }, {
+                        value: '4',
+                        text: '5'
+                    }]
+                }, this, function (e) {
+                    //回调函数 返回结果
+                    obj.data.type_id = e.value;
+                    obj.data.question_count = e.text;
+                    obj.update(obj.data);
+                });
+            }
+        });
+
+        var oldData = [];
+
+        table.render({
+            elem: '#LAY-user-back-manage'
+            , data: oldData
+            , cols: [[
+                {field: 'type', title: '错题类型', templet: '#selectTpl_type', event: 'type'}
+                , {field: 'difficulty', title: '难度', templet: '#selectTp2_type', event: 'type1'}
+                , {field: 'grade', title: '适用年级', templet: '#selectTp3_type', event: 'type2'}
+                , {field: 'question_count', title: '数量', templet: '#selectTp4_type', event: 'type3'}
+            ]]
+            , height: 'full-150'
+        });
+
+        var active = {
+            addRow: function () {
+                oldData = table.cache["LAY-user-back-manage"];
+                var newData = {"type": "", "difficulty": "", "grade": "", "question_count": ""};
+                oldData.push(newData);
+                table.reload('LAY-user-back-manage', {
+                    data: oldData
+                });
+            }
+        };
+
+        $('#LAY-user-back-submit_one').click(function () {
+            var file = [];
+            file = table.cache["LAY-user-back-manage"];
+            if (file.length === 0) {
+                return false;
+            }
+
+            var obj = [];
+            for (var i = 0; i < file.length; i++) {
+                obj[i] = file[i];
+            }
+
+            $.ajax({
+                type: 'post',
+                url: "/practice/add/teacher",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(obj),
+                success:function (res) {
+                    if (res.code === 0) {
+                        layer.open({
+                            title: "提示"
+                            , content: "添加练习成功"
+                        });
+                    } else {
+                        layer.open({
+                            title: "提示"
+                            , content: "添加练习失败"
+                        });
+                    }
+                },
+                error:function () {
+                    location.href = '../../tips/error.html';
+                }
+            });
+        });
+
+        $('.layui-btn.layuiadmin-btn-admin').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.five.questionSystem.dao.OptionDao">
+
+    <insert id="insert" parameterType="com.five.questionSystem.entity.Option">
+        <foreach collection="list" item="item" index="index" separator=";">
+            insert into question_system.t_option(
+                opt,
+                question_id
+            ) values (
+                #{item.opt},
+                #{item.questionId}
+            )
+        </foreach>
+    </insert>
+
+</mapper>
